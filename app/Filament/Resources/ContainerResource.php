@@ -27,6 +27,9 @@ class ContainerResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(100),
+                Forms\Components\TextInput::make('location')
+                    ->required()
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('latitude')
                     ->required()
                     ->numeric(),

@@ -1,0 +1,106 @@
+services:
+  # Aplicación Laravel
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.simple
+    container_name: laravel_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./storage:/var/www/html/storage
+      - ./bootstrap/cache:/var/www/html/bootstrap/cache
+    ports:
+      - "8000:80"
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8000
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=gc_greenovation
+      - DB_USERNAME=root
+      - DB_PASSWORD=1234
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - MQTT_USERNAME=
+      - MQTT_PASSWORD=
+    depends_on:
+      - db
+      - mosquitto
+    networks:
+      - laravel
+
+  # Base de datos MySQL
+  db:
+    image: mysql:8.0
+    container_name: laravel_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: gc_greenovation
+      MYSQL_ROOT_PASSWORD: 1234
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - laravel
+
+  # Broker MQTT Mosquitto
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: mqtt_broker
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./docker/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    networks:
+      - laravel
+
+  # PHPMyAdmin (opcional, para administrar la BD)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: 1234
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - laravel
+
+  # MQTT Explorer (Visualizador MQTT)
+  mqtt-explorer:
+    image: smeagolworms4/mqtt-explorer
+    container_name: mqtt_explorer
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      - HTTP_PORT=4000
+    depends_on:
+      - mosquitto
+    networks:
+      - laravel
+
+networks:
+  laravel:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
+  mosquitto_data:
+    driver: local
+  mosquitto_log:
+    driver: local

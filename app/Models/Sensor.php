@@ -49,4 +49,12 @@ class Sensor extends Model
     {
         return $this->hasMany(Reading::class, 'sensor_id');
     }
+
+    /**
+     * Funcion para obtener el nombre del tipo sensor y modelo
+     */
+    public function getDisplayNameAttribute()
+    {
+        return "{$this->sensorType->name} - {$this->model}";
+    }
 }

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('readings', function (Blueprint $table) {
             $table->id(); // id_lectura
             $table->foreignId('sensor_id')->constrained('sensors'); // id_sensor
+            $table->foreignId('container_id')->constrained('containers'); // id_contenedor
             $table->float('value'); // valor
             $table->timestamp('reading_date')->useCurrent(); // fecha_lectura
             $table->timestamps();

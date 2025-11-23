@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\NotificationResource\Pages;
 use App\Filament\Resources\NotificationResource\RelationManagers;
+use App\Models\Container;
 use App\Models\Notification;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -24,9 +25,9 @@ class NotificationResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('container_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('container_id')
+                    ->options(Container::all()->pluck('name', 'id')->toArray())
+                    ->required(),
                 Forms\Components\TextInput::make('type')
                     ->required()
                     ->maxLength(50),
@@ -41,7 +42,7 @@ class NotificationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('container_id')
+                Tables\Columns\TextColumn::make('container.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type')

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('containers', function (Blueprint $table) {
             $table->id(); // id_contenedor
             $table->string('name', 100); // nombre
+            $table->string('location', 255); // ubicacion
             $table->decimal('latitude', 10, 8); // ubicacion_latitud
             $table->decimal('longitude', 11, 8); // ubicacion_longitud
             $table->timestamp('installation_date')->useCurrent(); // fecha_instalacion

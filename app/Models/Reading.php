@@ -5,15 +5,34 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class Reading
+ *
+ * @property $id
+ * @property $sensor_id
+ * @property $container_id
+ * @property $value
+ * @property $reading_date
+ * @property $created_at
+ * @property $updated_at
+ *
+ * @property Sensor $sensor
+ * @property Container $container
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
 class Reading extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'sensor_id', // id_sensor
-        'value', // valor
-        'reading_date', // fecha_lectura
-    ];
+    protected $perPage = 20;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['sensor_id', 'container_id', 'value', 'reading_date'];
 
     /**
      * Relación: Una lectura pertenece a un sensor.
@@ -21,5 +40,13 @@ class Reading extends Model
     public function sensor()
     {
         return $this->belongsTo(Sensor::class, 'sensor_id');
+    }
+
+    /**
+     * Relación: Una lectura pertenece a un contenedor.
+     */
+    public function container()
+    {
+        return $this->belongsTo(Container::class, 'container_id');
     }
 }

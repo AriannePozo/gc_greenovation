@@ -11,6 +11,7 @@ class Container extends Model
 
     protected $fillable = [
         'name', // nombre
+        'location', // ubicacion
         'latitude', // ubicacion_latitud
         'longitude', // ubicacion_longitud
         'installation_date', // fecha_instalacion
@@ -30,5 +31,13 @@ class Container extends Model
     public function notifications()
     {
         return $this->hasMany(Notification::class, 'container_id');
+    }
+
+    /**
+     * Relación: Un contenedor puede tener muchas lecturas.
+     */
+    public function readings()
+    {
+        return $this->hasMany(Reading::class, 'container_id');
     }
 }

@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ReadingResource\Pages;
 use App\Filament\Resources\ReadingResource\RelationManagers;
 use App\Models\Reading;
+use App\Models\Sensor;
+use App\Models\SensorType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -24,9 +26,9 @@ class ReadingResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('sensor_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('sensor_id')
+                    ->options(Sensor::all()->pluck('display_name', 'id')->toArray())
+                    ->required(),
                 Forms\Components\TextInput::make('value')
                     ->required()
                     ->numeric(),
@@ -40,6 +42,12 @@ class ReadingResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('sensor_id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('sensor.sensorType.name')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('container.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('value')

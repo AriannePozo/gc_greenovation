@@ -4,7 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SensorResource\Pages;
 use App\Filament\Resources\SensorResource\RelationManagers;
+use App\Models\Container;
 use App\Models\Sensor;
+use App\Models\SensorStatus;
+use App\Models\SensorType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -24,19 +27,18 @@ class SensorResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('sensor_type_id')
+                Forms\Components\Select::make('sensor_type_id')
+                    ->options(SensorType::all()->pluck('name', 'id')->toArray())
+                    ->required(),
+                Forms\Components\Select::make('container_id')
+                    ->options(Container::all()->pluck('name', 'id')->toArray())
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('container_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('sensor_status_id')
-                    ->required()
-                    ->numeric()
-                    ->default(1),
+                    ->required(),
+                Forms\Components\Select::make('sensor_status_id')
+                    ->options(SensorStatus::all()->pluck('name', 'id')->toArray())
+                    ->required(),
                 Forms\Components\TextInput::make('model')
-                    ->maxLength(50)
-                    ->default(null),
+                    ->maxLength(50),
                 Forms\Components\DateTimePicker::make('installation_date')
                     ->required(),
                 Forms\Components\DateTimePicker::make('last_reading'),
@@ -47,13 +49,13 @@ class SensorResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('sensor_type_id')
+                Tables\Columns\TextColumn::make('sensorType.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('container_id')
+                Tables\Columns\TextColumn::make('container.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('sensor_status_id')
+                Tables\Columns\TextColumn::make('sensorStatus.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('model')
