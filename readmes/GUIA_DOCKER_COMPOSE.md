@@ -443,5 +443,3 @@ docker-compose exec -T db mysql -u root -p1234 gc_greenovation < backup_20241217
 - **Logs**: Todos los logs se almacenan en volúmenes y son accesibles
 - **Red interna**: Los servicios se comunican usando nombres de contenedor (`db`, `mosquitto`, etc.)
 - **Puertos**: Solo los puertos especificados están expuestos al host
-
-¿Tienes alguna pregunta específica sobre alguna sección? ¡Estoy aquí para ayudarte!

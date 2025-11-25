@@ -24,8 +24,8 @@ services:
       - DB_PASSWORD=1234
       - MQTT_HOST=mosquitto
       - MQTT_PORT=1883
-      - MQTT_USERNAME=
-      - MQTT_PASSWORD=
+      - MQTT_USERNAME=admin
+      - MQTT_PASSWORD=smartbin_secure
     depends_on:
       - db
       - mosquitto
@@ -58,6 +58,7 @@ services:
       - "9001:9001"
     volumes:
       - ./docker/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./docker/mosquitto/passwd:/mosquitto/config/passwd
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
     networks:

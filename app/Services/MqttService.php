@@ -6,6 +6,7 @@ use PhpMqtt\Client\MqttClient;
 use PhpMqtt\Client\ConnectionSettings;
 use App\Models\Reading;
 use App\Models\Sensor;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -13,7 +14,7 @@ class MqttService
 {
     private MqttClient $client;
     private ConnectionSettings $connectionSettings;
-    
+
     public function __construct(
         private string $host,
         private int $port,
@@ -22,7 +23,7 @@ class MqttService
     ) {
         $this->client = new MqttClient($this->host, $this->port);
         $this->connectionSettings = new ConnectionSettings();
-        
+
         if ($this->username) {
             $this->connectionSettings = $this->connectionSettings
                 ->setUsername($this->username)
@@ -76,7 +77,7 @@ class MqttService
         try {
             // Parse JSON message
             $data = json_decode($message, true);
-            
+
             if (!$data) {
                 Log::error('Invalid JSON message received');
                 return false;
@@ -103,12 +104,26 @@ class MqttService
                 'sensor_id' => $data['sensor_id'],
                 'container_id' => $containerId,
                 'value' => $data['value'],
-                'reading_date' => isset($data['reading_date']) 
-                    ? Carbon::parse($data['reading_date']) 
+                'reading_date' => isset($data['reading_date'])
+                    ? Carbon::parse($data['reading_date'])
                     : now(),
             ]);
 
             Log::info("Saved reading: ID={$reading->id}, Sensor={$reading->sensor_id}, Value={$reading->value}");
+
+            // Verificar umbrales y crear notificación si es necesario
+            try {
+                $notificationService = new NotificationService();
+                $notification = $notificationService->checkThresholds($reading);
+
+                if ($notification) {
+                    Log::info("🔔 Notification triggered: ID={$notification->id}, Type={$notification->type}");
+                }
+            } catch (\Exception $e) {
+                Log::error('Error checking thresholds: ' . $e->getMessage());
+                // No fallar el proceso si hay error en notificaciones
+            }
+
             return true;
 
         } catch (\Exception $e) {
